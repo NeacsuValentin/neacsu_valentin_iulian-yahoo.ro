@@ -1,6 +1,7 @@
-const comments = [];
+let comments = [];
 const btn = document.querySelector('#sendBtn');
 const input = document.querySelector('#commentBox');
+const MAX_VALUE = 10000
 
 function displayComments(comments, containerNode) {
     function addParagraph(text) {
@@ -22,24 +23,19 @@ function displayComments(comments, containerNode) {
         return img;
     }
 
-    function addDeleteBtn(){
+    function addDeleteBtn(id){
         const deleteBtn = document.createElement("input");
         deleteBtn.type = "submit";
         deleteBtn.value = "Delete";
         deleteBtn.classList.add("deleteBtn");
 
-        const id = comments.length;
         deleteBtn.addEventListener("click", function(e){
             e.preventDefault();
             const commentDiv = document.getElementById(id);
-            //console.log(commentDiv);
-            commentDiv.remove(comments);
-            for (let i=0; i<id; i++){
-                if(comments[i].id === id){
-                    comments.splice(i,i)  
-                }
-            }
+            commentDiv.parentNode.removeChild(commentDiv)
+            comments = comments.filter( comment => comment.id !== id)
         })
+
         return deleteBtn;    
     }
     
@@ -48,20 +44,20 @@ function displayComments(comments, containerNode) {
 
         const mail = addTitle(comment.email);
         const p = addParagraph(comment.message);
-        const image = addImage(comment.img);
-        const delBtn = addDeleteBtn(comment.delBtn);
+        const image = addImage();
+        const delBtn = addDeleteBtn(comment.id);
         containerBox.appendChild(image);
         containerBox.appendChild(mail);
         containerBox.appendChild(p);
         containerBox.appendChild(delBtn);
-        containerBox.id = comments.length;
+        containerBox.id = comment.id;
         containerBox.classList.add("commentArea");
         p.classList.add("textBox")
         return containerBox;
     }
   
-    for (let idx = comments.length-1; idx < comments.length; idx++) {
-        const comment = comments[idx]; 
+        for (let i =  comments.length-1; i < comments.length; i++) {
+        const comment = comments[i]; 
         const commentNode = createCommentNode(comment);
         containerNode.appendChild(commentNode);
     }
@@ -72,8 +68,11 @@ btn.addEventListener('click', function(e) {
     comments.push({
         email: "neacsu_valentin@yahoo.ro",
         message: input.value,
-        img: "",
-        delBtn: "",
+        id: getRandomInt(),
     });
     displayComments(comments, document.body);
 })
+
+function getRandomInt() {
+    return Math.floor((Math.random() * MAX_VALUE) + 1);
+  }
